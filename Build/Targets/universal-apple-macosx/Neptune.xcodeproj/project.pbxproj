@@ -92,6 +92,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		0180E320224A332300B99C53 /* libaxTLS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4FCC85E1B1E3EB500CCA327 /* libaxTLS.a */; };
 		CA057AB011BC27F200C90519 /* NptTlsDefaultTrustAnchorsBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA057AAE11BC27F200C90519 /* NptTlsDefaultTrustAnchorsBase.cpp */; };
 		CA057AB111BC27F200C90519 /* NptTlsDefaultTrustAnchorsExtended.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA057AAF11BC27F200C90519 /* NptTlsDefaultTrustAnchorsExtended.cpp */; };
 		CA197D250E1AE4400018E87C /* libNeptune.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F912B69F0B8EB1C700C1E90D /* libNeptune.a */; };
@@ -1992,6 +1993,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0180E320224A332300B99C53 /* libaxTLS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2020,6 +2022,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0180E31F224A332300B99C53 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		CA16FE6011C6C882006E2A86 /* Apple */ = {
 			isa = PBXGroup;
 			children = (
@@ -2569,6 +2578,7 @@
 				E40D8B9D1AD86D3A0041A617 /* Neptune-Framework */,
 				F912B6A00B8EB1C700C1E90D /* Products */,
 				CA16FE6511C6C954006E2A86 /* CoreFoundation.framework */,
+				0180E31F224A332300B99C53 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -6205,7 +6215,6 @@
 				OTHER_LDFLAGS = (
 					"-framework",
 					UIKit,
-					"-laxTLS",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.axiomatic.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Neptune;
@@ -6262,7 +6271,6 @@
 				OTHER_LDFLAGS = (
 					"-framework",
 					UIKit,
-					"-laxTLS",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.axiomatic.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Neptune;
