@@ -161,18 +161,18 @@ NPT_DateTime::NPT_DateTime(const NPT_TimeStamp& timestamp, bool local)
 |   NPT_DateTime::ChangeTimeZone
 +---------------------------------------------------------------------*/
 NPT_Result
-NPT_DateTime::ChangeTimeZone(NPT_Int32 timezone)
+NPT_DateTime::ChangeTimeZone(NPT_Int32 tz)
 {
-    if (timezone < -12*60 || timezone > 12*60) {
+    if (tz < -12*60 || tz > 12*60) {
         return NPT_ERROR_OUT_OF_RANGE;
     }
     NPT_TimeStamp ts;
     NPT_Result result = ToTimeStamp(ts);
     if (NPT_FAILED(result)) return result;
-    ts.SetNanos(ts.ToNanos()+(NPT_Int64)timezone*(NPT_Int64)60*(NPT_Int64)1000000000);
+    ts.SetNanos(ts.ToNanos()+(NPT_Int64)tz*(NPT_Int64)60*(NPT_Int64)1000000000);
 
     result = FromTimeStamp(ts);
-    m_TimeZone = timezone;
+    m_TimeZone = tz;
     return result;
 }
 
@@ -190,10 +190,10 @@ NPT_DateTime::FromTimeStamp(const NPT_TimeStamp& ts, bool local)
     if (seconds < 0 && (NPT_Int32)seconds != seconds) return NPT_ERROR_OUT_OF_RANGE;
     
     // adjust for the timezone if necessary
-    NPT_Int32 timezone = 0;
+    NPT_Int32 tz = 0;
     if (local) {
-        timezone = GetLocalTimeZone();
-        seconds += timezone*60;
+        tz = GetLocalTimeZone();
+        seconds += tz*60;
     }
     
     // adjust to the number of seconds since 1900
@@ -251,7 +251,7 @@ NPT_DateTime::FromTimeStamp(const NPT_TimeStamp& ts, bool local)
     m_Seconds = (NPT_Int32)seconds - m_Minutes * 60;
     m_NanoSeconds = (NPT_Int32)(ts.ToNanos()%1000000000);
     if (local) {
-        m_TimeZone = timezone;
+        m_TimeZone = tz;
     } else {
         m_TimeZone = 0;
     }
@@ -557,15 +557,15 @@ NPT_DateTime::FromString(const char* date, Format format)
         --input_size;
         
         // look for the timezone
-        char* timezone = input+input_size-1;
+        char* tz = input+input_size-1;
         unsigned int timezone_size = 0;
-        while (input_size && *timezone != ' ') {
-            --timezone;
+        while (input_size && *tz != ' ') {
+            --tz;
             ++timezone_size;
             --input_size;
         }
         if (input_size == 0) return NPT_ERROR_INVALID_SYNTAX;
-        *timezone++ = '\0';
+        *tz++ = '\0';
         
         // check separators
         if (input_size < 20) return NPT_ERROR_INVALID_SYNTAX;
@@ -604,48 +604,48 @@ NPT_DateTime::FromString(const char* date, Format format)
         if (yl == 2) m_Year += 1900;
         
         // parse the timezone
-        if (NPT_StringsEqual(timezone, "GMT") ||
-            NPT_StringsEqual(timezone, "UT")  ||
-            NPT_StringsEqual(timezone, "Z")) {
+        if (NPT_StringsEqual(tz, "GMT") ||
+            NPT_StringsEqual(tz, "UT")  ||
+            NPT_StringsEqual(tz, "Z")) {
             m_TimeZone = 0;
-        } else if (NPT_StringsEqual(timezone, "EDT")) {
+        } else if (NPT_StringsEqual(tz, "EDT")) {
             m_TimeZone = -4*60;
-        } else if (NPT_StringsEqual(timezone, "EST") ||
-                   NPT_StringsEqual(timezone, "CDT")) {
+        } else if (NPT_StringsEqual(tz, "EST") ||
+                   NPT_StringsEqual(tz, "CDT")) {
             m_TimeZone = -5*60;
-        } else if (NPT_StringsEqual(timezone, "CST") ||
-                   NPT_StringsEqual(timezone, "MDT")) {
+        } else if (NPT_StringsEqual(tz, "CST") ||
+                   NPT_StringsEqual(tz, "MDT")) {
             m_TimeZone = -6*60;
-        } else if (NPT_StringsEqual(timezone, "MST") ||
-                   NPT_StringsEqual(timezone, "PDT")) {
+        } else if (NPT_StringsEqual(tz, "MST") ||
+                   NPT_StringsEqual(tz, "PDT")) {
             m_TimeZone = -7*60;
-        } else if (NPT_StringsEqual(timezone, "PST")) {
+        } else if (NPT_StringsEqual(tz, "PST")) {
             m_TimeZone = -8*60;
         } else if (timezone_size == 1) {
-            if (timezone[0] >= 'A' && timezone[0] <= 'I') {
-                m_TimeZone = -60*(1+timezone[0]-'A');
-            } else if (timezone[0] >= 'K' && timezone[0] <= 'M') {
-                m_TimeZone = -60*(timezone[0]-'A');            
-            } else if (timezone[0] >= 'N' && timezone[0] <= 'Y') {
-                m_TimeZone = 60*(1+timezone[0]-'N');
+            if (tz[0] >= 'A' && tz[0] <= 'I') {
+                m_TimeZone = -60*(1+tz[0]-'A');
+            } else if (tz[0] >= 'K' && tz[0] <= 'M') {
+                m_TimeZone = -60*(tz[0]-'A');            
+            } else if (tz[0] >= 'N' && tz[0] <= 'Y') {
+                m_TimeZone = 60*(1+tz[0]-'N');
             } else {
                 return NPT_ERROR_INVALID_SYNTAX;
             }
         } else if (timezone_size == 5) {
             int sign;
-            if (timezone[0] == '-') {
+            if (tz[0] == '-') {
                 sign = -1;
-            } else if (timezone[0] == '+') {
+            } else if (tz[0] == '+') {
                 sign = 1;
             } else {
                 return NPT_ERROR_INVALID_SYNTAX;
             }
-            NPT_UInt32 tz;
-            if (NPT_FAILED(NPT_ParseInteger(timezone+1, tz, false))) {
+            NPT_UInt32 i_tz;
+            if (NPT_FAILED(NPT_ParseInteger(tz+1, i_tz, false))) {
                 return NPT_ERROR_INVALID_SYNTAX;
             }
-            unsigned int hh = (tz/100);
-            unsigned int mm = (tz%100);
+            unsigned int hh = (i_tz/100);
+            unsigned int mm = (i_tz%100);
             if (hh > 59 || mm > 59) return NPT_ERROR_INVALID_SYNTAX;
             m_TimeZone = sign*(hh*60+mm);
         } else {
